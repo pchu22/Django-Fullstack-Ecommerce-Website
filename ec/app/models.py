@@ -57,7 +57,7 @@ class components(models.Model):
 
 class equipments(models.Model):
     type = models.ForeignKey(equipment_type, on_delete=models.CASCADE)
-    components = models.ManyToManyField(components, null=True)
+    components = models.ManyToManyField(components, related_name='equipments', null=True)
     name = models.CharField(max_length=50)
     serial_number = models.CharField(max_length=100, unique=True)
     production_date = models.DateField(default=datetime.datetime.today)
@@ -103,7 +103,7 @@ class labor(models.Model):
 
 class production(models.Model):
     equipment = models.ForeignKey(equipments, on_delete=models.CASCADE)
-    components = models.ManyToManyField(components_equipment, null=True)
+    components = models.ManyToManyField(components_equipment, related_name='production', null=True)
     labor = models.ForeignKey(labor, on_delete=models.CASCADE)
     order_number = models.CharField(max_length=100)
     production_date = models.DateField(default=datetime.datetime.today)
@@ -140,8 +140,8 @@ class users(models.Model):
     class Meta:
         db_table = 'users'
 
-class Orders(models.Model):
-    equipments = models.ManyToManyField(equipments, null=True)
+class orders(models.Model):
+    equipments = models.ManyToManyField(equipments, related_name='orders', null=True)
     costumer = models.ForeignKey(users, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2) 
     order_date = models.DateField(default=datetime.datetime.today)
