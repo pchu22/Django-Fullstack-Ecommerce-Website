@@ -11,18 +11,12 @@ class equipment_type(models.Model):
     def __str__(self):
         return self.type_name
     
-    class Meta:
-        db_table = 'equipment_type'
-    
 class component_type(models.Model):
     type_name = models.CharField(max_length=50)
     description = models.TextField()
     
     def __str__(self):
         return self.type_name
-    
-    class Meta:
-        db_table = 'component_type'
 
 class supplier(models.Model):
     name = models.CharField(max_length=100)
@@ -36,9 +30,6 @@ class supplier(models.Model):
 
     def __str__(self):
         return self.name
-    
-    class Meta:
-        db_table = 'supplier'
 
 class components(models.Model):
     component_type = models.ForeignKey(component_type, on_delete=models.CASCADE)
@@ -51,10 +42,6 @@ class components(models.Model):
     def __str__(self):
         return self.name
 
-        
-    class Meta:
-        db_table = 'components'
-
 class equipments(models.Model):
     type = models.ForeignKey(equipment_type, on_delete=models.CASCADE)
     components = models.ManyToManyField(components, related_name='equipments', null=True)
@@ -65,20 +52,6 @@ class equipments(models.Model):
 
     def __str__(self):
         return self.name
-    
-    class Meta:
-        db_table = 'equipments'
-
-class components_equipment(models.Model):
-    equipment = models.ForeignKey(equipments, on_delete=models.CASCADE)
-    component = models.ForeignKey(components, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-
-    def __str__(self):
-        return f"The component, {self.equipment.name} has {self.quantity} units of {self.component.name}"
-
-    class Meta:
-        db_table = 'components_equipment'
 
 class labor_type(models.Model):
     type_name = models.CharField(max_length=50)
@@ -88,9 +61,6 @@ class labor_type(models.Model):
     def __str__(self):
         return f"The labor type {self.type_name} has the cost of {self.value}"
 
-    class Meta:
-        db_table = 'labor_type'
-
 class labor(models.Model):
     name = models.CharField(max_length=50)
     labor_type = models.ForeignKey(labor_type, on_delete=models.CASCADE)
@@ -98,12 +68,9 @@ class labor(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
-        db_table = 'labor'
-
 class production(models.Model):
     equipment = models.ForeignKey(equipments, on_delete=models.CASCADE)
-    components = models.ManyToManyField(components_equipment, related_name='production', null=True)
+    components = models.ManyToManyField(components, related_name='production', null=True)
     labor = models.ForeignKey(labor, on_delete=models.CASCADE)
     order_number = models.CharField(max_length=100)
     production_date = models.DateField(default=datetime.datetime.today)
@@ -111,18 +78,12 @@ class production(models.Model):
     def __str__(self):
         return f"The production of {self.equipment} will cost {self.labor.labor_type.value}€"
 
-    class Meta:
-        db_table = 'production'
-
 class profiles(models.Model):
     profile_name = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
 
     def __str__(self):
         return self.profile_name
-
-    class Meta:
-        db_table = 'profiles'
 
 class users(models.Model):
     profile = models.ForeignKey(profiles, on_delete=models.CASCADE)
@@ -133,12 +94,9 @@ class users(models.Model):
     password = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
-
-    class Meta:
-        db_table = 'users'
 
 class orders(models.Model):
     equipments = models.ManyToManyField(equipments, related_name='orders', null=True)
@@ -149,6 +107,3 @@ class orders(models.Model):
 
     def __str__(self):
         return f"Costumer {self.costumer.first_name} {self.costumer.last_name} ordered {self.equipments.name} on the day {self.order_date}. Status: {self.status}"
-
-    class Meta:
-        db_table = 'orders'
