@@ -106,4 +106,4 @@ class orders(models.Model):
     status = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Costumer {self.costumer.first_name} {self.costumer.last_name} ordered {self.equipments.name} on the day {self.order_date}. Status: {self.status}"
+        return f"Costumer {self.costumer.first_name} {self.costumer.last_name} ordered {self.equipments.name} on the day {self.order_date}. Status: {self.status}"  
