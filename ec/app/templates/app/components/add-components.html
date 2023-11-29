@@ -1,0 +1,15 @@
+{% extends 'app/base.html' %}
+{% block title %} Components {% endblock title%}
+
+{% block main-content %}
+    <div class="my-5 mx-5">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mt-4">
+                <button type="submit" class="btn btn-outline-success">Add Component</button>
+                <a type="button" class="btn btn-outline-danger mx-2" href="{% url 'ComponentsList' %}">Go Back</a>
+            </div>
+        </form>
+    </div>
+{% endblock main-content %}

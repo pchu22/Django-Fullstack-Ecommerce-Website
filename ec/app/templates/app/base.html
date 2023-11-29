@@ -13,34 +13,25 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand text-light" href="">Navbar</a>
+                <a href="{% url 'Homepage' %}" class="btn-floating btn-sm text-white" style="font-size: 30px;">
+                    <i class="bi bi-terminal"></i>
+                </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active text-light" aria-current="page" href="">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="">Link</a>
+                    <li class="nav-item mx-2">
+                        <a href="{% url 'ComponentsList' %}" class="nav-link text-white">Components</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Dropdown
-                        </a>
+                        <a class="nav-link dropdown-toggle text-light" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">Products</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item text-light" href="">Action</a></li>
-                            <li><a class="dropdown-item text-light" href="">Another action</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-light" href="">Something else here</a></li>
+                            <li><a class="dropdown-item text-black" href="#">Desktops</a></li>
+                            <li><a class="dropdown-item text-black" href="#">Laptops</a></li>
                         </ul>
                     </li>
                 </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
             </div>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown mx-2">
@@ -56,16 +47,10 @@
                     </ul>
                 </li>
                 <li class="nav-item mx-2">
-                    <a href="#" class="nav-link text-white">Cart</a>
+                    <a href="#" class="nav-link text-white"><i class="bi bi-cart4"></i></a>
                 </li>
                 <li class="nav-item mx-2">
-                    <a href="#" class="nav-link text-white">Wishlist</a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a href="{% url 'Login' %}" class="nav-link text-white">Login</a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a href="{% url 'Signup' %}" class="nav-link text-white">Sign Up</a>
+                    <a href="#" class="nav-link text-white"><i class="bi bi-star"></i></a>
                 </li>
             </ul>
         </div>
