@@ -5,7 +5,7 @@
     <h1 class="my-5 text-center fw-bold">Inventory of Components for Computer Assembly</h1>
     <div class="text-center mb-3">
         <div class="btn-group">
-            <a type="button" class="btn btn-outline-secondary" href="{% url 'AddComponent' %}">
+            <a type="button" class="btn btn-outline-secondary" href="{% url 'AddComponents' %}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                 </svg>
@@ -35,7 +35,6 @@
                 <th>Purchase Price</th>
                 <th>Purchase Date</th>
                 <th>Supplier</th>
-                <th>Stock</th>
                 <th colspan="2" class="text-center">Actions</th>
             </tr>
         </thead>
@@ -43,22 +42,22 @@
             {% for component in components %}
             <tr>
                 <td>
-                    <div class="d-flex align-items-center"> 
+                    <div class="d-flex align-items-center">
                         {% if component.image %}
-                            <img
-                                src="{{component.image}}"
-                                alt="{{component.name}}"
-                                style="width: 45px; height: 45px"
-                                class="rounded-circle"
-                            />
-                        {% else %}
-                            <img
-                                src="https://imgs.search.brave.com/dZOZz-Sc4JextouhTr8OXVFW-n1azOfkwUZXk9eLdxg/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9wbHVz/cG5nLmNvbS9pbWct/cG5nL3BuZy1xdWVz/dGlvbi1oZWxwLXF1/ZXN0aW9uLW1hcmst/aWNvbi1kb3dubG9h/ZC1wbmctMjU4LnBu/Zw"
-                                alt="component_img"
-                                style="width: 45px; height: 45px"
-                                class="rounded-circle"
-                            />
-                        {% endif %}
+                        <img
+                            src="{{ component.image }}"
+                            alt="component_img"
+                            style="width: 45px; height: 45px"
+                            class="rounded-circle"
+                        />
+                    {% else %}
+                        <img
+                            src="https://imgs.search.brave.com/dZOZz-Sc4JextouhTr8OXVFW-n1azOfkwUZXk9eLdxg/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9wbHVz/cG5nLmNvbS9pbWct/cG5nL3BuZy1xdWVz/dGlvbi1oZWxwLXF1/ZXN0aW9uLW1hcmst/aWNvbi1kb3dubG9h/ZC1wbmctMjU4LnBu/Zw"
+                            alt="component_img"
+                            style="width: 45px; height: 45px"
+                            class="rounded-circle"
+                        />
+                    {% endif %}
                         <div class="ms-3">
                             <p class="fw-bold mb-1">{{component.name}}</p>
                             <p class="text-muted mb-0">{{component.component_type_name}}</p>
@@ -66,28 +65,11 @@
                     </div>
                 </td>
                 <td>
-                    <p class="fw-normal mb-1">
-                        {% for serial_number in component.serial_numbers %}
-                            {{serial_number}}<br>
-                        {% endfor %} 
-                    </p>
+                    <p class="fw-normal mb-1">{{component.serial_number}}</p>
                 </td>
-                <td class="fw-bold">
-                    {% for purchase_price in component.purchase_prices %}
-                        {{purchase_price}}€<br>
-                    {% endfor %}    
-                </td>
-                <td>
-                    {% for purchase_date in component.purchase_dates %}
-                        {{purchase_date}}<br>
-                    {% endfor %}   
-                </td>
-                <td>
-                    {% for supplier in component.suppliers %}
-                        {{supplier}}<br>
-                    {% endfor %}
-                </td>
-                <td>{{component.stock_quantity}}</td>
+                <td class="fw-bold">{{component.purchase_price}}€</td>
+                <td>{{component.purchase_date}}</td>
+                <td>{{component.supplier_name}}</td>
                 <td class="text-center">
                     <div class="btn-group">
                         <a type="button" class="btn btn-outline-secondary btn-sm btn-rounded" href="{% url 'EditComponent' component.component_id %}">
