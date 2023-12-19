@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 from . import models
 
 #Create your forms here
@@ -100,25 +101,63 @@ class ComponentForm(forms.ModelForm): #This form will serve two purposes. Create
         for field in fields:
             widgets[field].attrs['required'] = False
 
+class EquipmentTypeForm(forms.ModelForm): #This form will serve two purposes. Create and edit equipment types!
+    class Meta:
+        model = models.equipment_type
+        fields = ['type_name', 'description']
+
+        labels = {
+            'type_name': 'Equipment Type',
+            'description': 'Description'
+        }
+
+        widgets = {
+            'type_name': forms.TextInput(attrs={}),
+            'description': forms.Textarea(attrs={'rows': 5, 'cols': 50}),
+        }
+        
+        for field in fields:
+            widgets[field].attrs['required'] = 'required'
+
+class EquipmentForm(forms.ModelForm):
+    components = forms.ModelMultipleChoiceField(
+        queryset=models.components.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label='Components'
+    )
+
+    class Meta:
+        model = models.equipments
+        fields = ['type', 'name', 'serial_number', 'value', 'components']
+
+        labels = {
+            'type': 'Equipment Type',
+            'name': 'Equipment Name',
+            'serial_number': 'Serial Number',
+            'value': 'Equipment Value',
+        }
+
+        widgets = {
+            'name': forms.TextInput(attrs={}),
+            'type': forms.Select(attrs={}),
+            'serial_number': forms.TextInput(attrs={}),
+            'value': forms.NumberInput(attrs={}),
+        }
+
 class SignupForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'required': 'required'}))
 
     class Meta:
         model = models.users
-        fields = ['first_name', 'last_name', 'phone_number', 'email', 'password']
+        fields = ['email', 'password']
 
         labels = {
-            'first_name': 'First Name',
-            'last_name': 'Last Name',
-            'phone_number': 'Phone Number',
             'email': 'Email',
             'password': 'Password',
         }
 
         widgets = {
-            'first_name': forms.TextInput(attrs={}),
-            'last_name': forms.TextInput(attrs={}),
-            'phone_number': forms.TextInput(attrs={}),
             'email': forms.EmailInput(attrs={}),
             'password': forms.PasswordInput(attrs={}),
         }

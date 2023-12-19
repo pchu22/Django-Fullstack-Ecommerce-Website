@@ -33,32 +33,31 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item text-black" href="{% url 'ComponentsList' %}">In Stock</a></li>
                             <li><a class="dropdown-item text-black" href="{% url 'ComponentTypesList' %}">Component Types</a></li>
-                            <li><a class="dropdown-item text-black" href="#">Order Components</a></li>
+                            <li><a class="dropdown-item text-black" href="#">Orders</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item mx-2">
-                        <a href="#" class="nav-link text-white">Products</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Equipments</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item text-black" href="{% url 'EquipmentsList' %}">In Stock</a></li>
+                            <li><a class="dropdown-item text-black" href="{% url 'EquipmentTypesList' %}">Equipment Types</a></li>
+                            <li><a class="dropdown-item text-black" href="#">Production</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown mx-2">
+                <li class="nav-item dropdown" style="margin-right: 5rem;">
                     <a class="nav-link dropdown-toggle text-white" href="" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         Pedro
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item text-black" href="">Profile</a></li>
-                        <li><a class="dropdown-item text-black" href="">Orders</a></li>
-                        <li><a class="dropdown-item text-black" href="">Change Password</a></li>
+                        <li><a class="dropdown-item text-black" href="#">Profile</a></li>
+                        <li><a class="dropdown-item text-black" href="#">Orders</a></li>
+                        <li><a class="dropdown-item text-black" href="#">Change Password</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item bg-danger text-white" href="">Logout</a></li>
+                        <li><a class="dropdown-item bg-danger text-white" href="{% url 'Login' %}">Logout</a></li>
                     </ul>
-                </li>
-                <li class="nav-item mx-2">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-cart4"></i></a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a href="#" class="nav-link text-white"><i class="bi bi-star"></i></a>
                 </li>
             </ul>
         </div>
