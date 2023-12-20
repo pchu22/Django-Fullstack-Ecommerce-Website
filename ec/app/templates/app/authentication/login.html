@@ -7,10 +7,17 @@
         <div class="col-sm-6 offset-sm-3">
             <h3>Login</h3>
             <hr>
+
+            {% if error_message %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
             <form action="" method="POST" novalidate class="shadow p-5">
                 {% csrf_token %}    
-                {% for fm in form %}
-                    {{fm.label_tag}} {{fm}} <small class="text-danger">{{fm.errors|striptags}}</small>
+                {% for field in form %}
+                    {{field.label_tag}} {{field}} <small class="text-danger">{{field.errors|striptags}}</small>
                     <br>
                 {% endfor %}
                 <input type="submit" value="Login" class="btn btn-primary mt-4"><br>

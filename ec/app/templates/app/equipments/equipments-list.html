@@ -34,7 +34,11 @@
                 </td>
                 <td class="fw-bold">{{equipment.serial_number}}</td>
                 <td>{{equipment.value}}€</td>
-                <td>{{equipment.components}}</td>
+                <td>
+                    {% for component in equipment.components %}
+                        {{ component }}<br>
+                    {% endfor %}
+                </td>
                 <td class="text-center">
                     <div class="btn-group">
                         <a type="button" class="btn btn-outline-secondary btn-sm btn-rounded" href="{% url 'EditEquipment' equipment.equipment_id %}">

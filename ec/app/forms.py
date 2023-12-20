@@ -120,13 +120,6 @@ class EquipmentTypeForm(forms.ModelForm): #This form will serve two purposes. Cr
             widgets[field].attrs['required'] = 'required'
 
 class EquipmentForm(forms.ModelForm):
-    components = forms.ModelMultipleChoiceField(
-        queryset=models.components.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        label='Components'
-    )
-
     class Meta:
         model = models.equipments
         fields = ['type', 'name', 'serial_number', 'value', 'components']
@@ -143,11 +136,46 @@ class EquipmentForm(forms.ModelForm):
             'type': forms.Select(attrs={}),
             'serial_number': forms.TextInput(attrs={}),
             'value': forms.NumberInput(attrs={}),
+            'components': forms.CheckboxSelectMultiple(attrs={}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['components'].queryset = models.components.objects.all()
 
 class SignupForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'required': 'required'}))
 
+    class Meta:
+        model = models.users
+        fields = ['first_name', 'last_name', 'email', 'password']
+
+        labels = {
+            'email': 'Email',
+            'password': 'Password',
+            'first_name': 'First Name',
+            'last_name': 'Last Name'
+        }
+
+        widgets = {
+            'email': forms.EmailInput(attrs={}),
+            'password': forms.PasswordInput(attrs={}),
+            'first_name': forms.TextInput(attrs={}),
+            'last_name': forms.TextInput(attrs={}),
+        }
+
+        for field in fields:
+            widgets[field].attrs['required'] = 'required'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError('Passwords do not match.')
+
+class LoginForm(forms.ModelForm):
     class Meta:
         model = models.users
         fields = ['email', 'password']
@@ -164,11 +192,7 @@ class SignupForm(forms.ModelForm):
 
         for field in fields:
             widgets[field].attrs['required'] = 'required'
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-
-        if password and confirm_password and password != confirm_password:
-            raise forms.ValidationError('Passwords do not match.')
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        print(f'Cleaned email: {email}')
+        return email

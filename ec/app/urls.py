@@ -23,7 +23,7 @@ urlpatterns = [
     path('components/add', views.create_component, name='AddComponent'),
     path('components/edit/<int:id>', views.edit_component, name='EditComponent'),
     path('components/delete/<int:id>', views.delete_component, name='DeleteComponent'),
-    path('components/detail/<str:name>', views.components_detail, name='ComponentsDetail'),
+    path('components/detail/<str:name>/<int:component_type_id>', views.components_detail, name='ComponentsDetail'),
     #component types
         path('component-types/', views.list_component_types, name='ComponentTypesList'),
         path('component-types/add', views.create_component_type, name='AddComponentType'),
@@ -33,8 +33,8 @@ urlpatterns = [
 #equipments
     path('equipments/', views.list_equipments, name='EquipmentsList'),
     path('equipments/add', views.create_equipment, name='AddEquipment'),
-    path('equipments/edit/<int:id>', views.home, name='EditEquipment'),
-    path('equipments/delete/<int:id>', views.home, name='DeleteEquipment'),
+    path('equipments/edit/<int:id>', views.edit_equipment, name='EditEquipment'),
+    path('equipments/delete/<int:id>', views.delete_equipment, name='DeleteEquipment'),
     #equipment types
         path('equipment-types/', views.list_equipment_types, name='EquipmentTypesList'),
         path('equipment-types/add', views.create_equipment_type, name='AddEquipmentType'),

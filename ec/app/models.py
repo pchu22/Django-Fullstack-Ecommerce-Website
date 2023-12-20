@@ -1,9 +1,7 @@
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.utils import timezone
 import datetime
-from enum import Enum
-from django.db.models.signals import post_migrate
-from django.dispatch import receiver
 
 # Create your models here.
 
@@ -98,13 +96,20 @@ class production(models.Model):
         super().save(*args, **kwargs)
 
 class users(models.Model):
-    first_name = models.CharField(max_length=50) 
-    last_name = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=12) 
+    first_name = models.CharField(max_length=50, null=True) 
+    last_name = models.CharField(max_length=50, null=True)
+    phone_number = models.CharField(max_length=12, null=True) 
     email = models.EmailField() 
     password = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.password = make_password(self.password)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 class orders(models.Model):
     equipments = models.ManyToManyField(equipments, related_name='orders', null=True)

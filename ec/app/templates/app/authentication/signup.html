@@ -1,6 +1,6 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block title %} Customer Registration {% endblock title %}
+{% block title %} Signup {% endblock title %}
 {% block main-content %}
 <div class="container">
     <div class="row my-3">
@@ -8,30 +8,18 @@
             <h3>Signup</h3>
             <hr>
             <form action="" method="POST" novalidate class="shadow p-5">
-                {% csrf_token %}
-                {% for fm in form %}
-                    {{fm.label_tag}} {{fm}} <small class="text-danger">{{fm.errors|striptags}}</small>
+                {% csrf_token %}    
+                {% if error_message %}
+                    <div class="alert alert-danger">{{ error_message }}</div>
+                {% endif %}
+                {% for field in form %}
+                    {{ field.label_tag }} {{ field }} <small class="text-danger">{{ field.errors|striptags }}</small>
                     <br>
                 {% endfor %}
-                
-                <input type="submit" value="Submit" class="btn btn-primary"><br>
+                <input type="submit" value="Signup" class="btn btn-primary mt-4"><br>
                 <div class="text-center text-primary fw-bold">
-                    <small>Already Have an Account? <a href="{% url 'Login' %}" class="text-danger text-decoration-none">Login</a></small>
+                    <small>Already have an account? <a href="{% url 'Login' %}" class="text-danger text-decoration-none">Login</a></small>
                 </div>
-
-                {% if form.non_field_errors %}
-                    {% for error in form.non_field_errors %}
-                        <p class="alert alert-danger my-3">{{error}}</p>
-                    {% endfor %}
-                {% endif %}
-
-                {% if messages %}
-                    {% for msg in messages %}
-                        <div class="alert alert-{{msg.tags}}" role="alert">
-                            {{msg}}
-                        </div>
-                    {% endfor %}
-                {% endif %}
             </form>
         </div>
     </div>

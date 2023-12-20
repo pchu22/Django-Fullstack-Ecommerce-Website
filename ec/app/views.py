@@ -1,10 +1,10 @@
+from django.contrib.auth import login, logout
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.db import connection, IntegrityError
+from django.db import connection
 from . import forms
 from . import models
 import xml.etree.ElementTree as ET
@@ -13,8 +13,6 @@ from django.core.serializers.base import SerializationError
 from django.http import HttpResponse, JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-import logging
-logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -22,6 +20,12 @@ def home(request):
     return render(request, 'app/home.html')
 
 # Auth views
+
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db import connection
+from . import forms, models
+from django.contrib.auth.hashers import make_password, check_password
 
 def signup(request):
     if request.method == 'POST':
@@ -32,28 +36,29 @@ def signup(request):
             confirm_password = form_data['confirm_password']
 
             if password != confirm_password:
-                messages.error(request, 'Passwords do not match.')
-                return render(request, 'signup.html', {'form': form})
+                return render(request, 'app/authentication/signup.html', {'error_message': 'Passwords do not match!'})
 
             try:
+                existing_user = models.users.objects.filter(email=form_data['email']).exists()
+                if existing_user:
+                    error_message = 'A user with this email already exists!'
+                    return render(request, 'app/authentication/signup.html', {'form': form, 'error_message': error_message})
+
                 with connection.cursor() as cursor:
                     cursor.execute(
                         'SELECT signup(%s, %s, %s, %s, %s)',
                         [
                             form_data['first_name'],
                             form_data['last_name'],
-                            form_data['phone_number'],
                             form_data['email'],
                             password,
+                            confirm_password,
                         ]
                     )
             except Exception as e:
-                print(f"Error during signup: {e}")
-                messages.error(request, 'Error during signup. Please try again.')
-                return render(request, 'signup.html', {'form': form})
-
-            messages.success(request, 'Signup successful. Please log in.')
-            return redirect('login')
+                error_message = str(e)
+                return render(request, 'app/authentication/signup.html', {'form': form, 'error_message': error_message})
+            return redirect(login)
     else:
         form = forms.SignupForm()
     
@@ -62,19 +67,36 @@ def signup(request):
 
 def login(request):
     if request.method == 'POST':
-        p_email = request.POST['email']
-        p_password = request.POST['password']
+        form = forms.LoginForm(request.POST)
+        if form.is_valid():
+            form_data = form.cleaned_data
+            print(f'Cleaned email: {form_data["email"]}')
 
-        with connection.cursor() as cursor:
-            cursor.callproc('user_login', [p_email, p_password])
-            user_authenticated = cursor.fetchone()[0]
+            # Check if the user exists in the database
+            try:
+                user = get_object_or_404(models.users, email=form_data['email'])
+                print(f'User found: {user}')
 
-        if user_authenticated:
-            user = authenticate(request, username=p_email, password=p_password)
-            if user:
-                login(request, user)
-                return redirect(home)
-    return render(request, 'app/authentication/login.html')
+                # Check the password
+                if check_password(form_data['password'], user.password):
+                    print('Password is correct. Redirecting to home.')
+                    return redirect('home')
+                else:
+                    print('Invalid Password')
+                    form.add_error(None, 'Invalid Credentials.')
+            except models.users.DoesNotExist:
+                print('User not found')
+                form.add_error(None, 'User not found')
+            except Exception as e:
+                print(f"Error during login: {e}")
+                form.add_error(None, 'Error during login.')
+        else:
+            print(f'Form is not valid: {form.errors}')
+    else:
+        form = forms.LoginForm()
+
+    context = {'form': form}
+    return render(request, 'app/authentication/login.html', context=context)
 
 @login_required
 def logout_view(request):
@@ -314,9 +336,23 @@ def list_components(request):
     context = {'components': list(aggregated_components.values())}
     return render(request, 'app/components/components-list.html', context=context)
 
-def components_detail(request, name):
+def components_detail(request, name, component_type_id):
     with connection.cursor() as cursor:
-        cursor.execute('SELECT c.component_id, c.component_type_id, c.supplier_id, c.name, c.serial_number, c.purchase_date, c.purchase_price, c.image, s.name as supplier_name, ct.type_name FROM app_components c JOIN app_supplier s ON c.supplier_id = s.supplier_id JOIN app_component_type ct ON ct.component_type_id = c.component_type_id WHERE c.name = %s', [name])
+        cursor.execute('''SELECT 
+                        c.component_id,
+                        c.component_type_id,
+                        c.supplier_id,
+                        c.name,
+                        c.serial_number,
+                        c.purchase_date,
+                        c.purchase_price,
+                        c.image,
+                        s.name as supplier_name,
+                        ct.type_name
+                        FROM app_components c JOIN app_supplier s 
+                            ON c.supplier_id = s.supplier_id JOIN app_component_type ct 
+                                ON ct.component_type_id = c.component_type_id 
+                        WHERE c.name = %s AND c.component_type_id = %s''', [name, component_type_id])
         columns = [col[0] for col in cursor.description]
         components = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
@@ -474,7 +510,17 @@ def list_equipments(request):
         columns = [col[0] for col in cursor.description]
         equipments = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-    context = {'equipments': equipments}
+        aggregated_equipments= {}
+        for equipment in equipments:
+            serial_number = equipment['serial_number']
+
+            if serial_number in aggregated_equipments:
+                aggregated_equipments[serial_number]['components'].append(equipment['component_name'])
+            else:
+                equipment['components'] = [equipment['component_name']]
+                aggregated_equipments[serial_number] = equipment
+
+    context = {'equipments': list(aggregated_equipments.values())}
     return render(request, 'app/equipments/equipments-list.html', context=context)
 
 def create_equipment(request):
@@ -486,22 +532,53 @@ def create_equipment(request):
             with connection.cursor() as cursor:
                 components_ids = form_data['components'].values_list('component_id', flat=True)
                 cursor.execute(
-                    'CALL insert_equipment(%s, %s, %s, %s, %s, %s)',
+                    'CALL insert_equipment(%s, %s, %s, %s, %s)',
                     [
-                            form_data['type'].equipment_type_id,
-                            form_data['labor_type'].labor_type_id,
-                            form_data['name'],
-                            form_data['serial_number'],
-                            form_data['value'],
-                            list(components_ids)
+                        form_data['type'].equipment_type_id, 
+                        form_data['name'],
+                        form_data['serial_number'],
+                        form_data['value'],
+                        list(components_ids)
                     ]
                 )
             return redirect(list_equipments)
     else:
-        form = forms.EquipmentForm(initial={'production_date': timezone.now()})
+        form = forms.EquipmentForm()
 
     context = {'form': form}
     return render(request, 'app/equipments/add-equipment.html', context=context)
+
+def edit_equipment(request, id):
+    equipment = get_object_or_404(models.equipments, equipment_id=id)
+    if request.method == 'POST':
+        form = forms.EquipmentForm(request.POST, instance=equipment)
+        if form.is_valid():
+            form_data = form.cleaned_data
+            components_ids = form_data['components'].values_list('component_id', flat=True)
+
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    'CALL edit_equipment(%s, %s, %s, %s, %s)',
+                    [
+                        id,
+                        form_data['name'],
+                        form_data['serial_number'],
+                        form_data['value'],
+                        list(components_ids)
+                    ]
+                )
+            return redirect(list_equipments)
+    else:
+        form = forms.EquipmentForm(instance=equipment)
+
+    context = {'form': form, 'equipment': equipment}
+    return render(request, 'app/equipments/edit-equipment.html', context=context)
+
+def delete_equipment(request, id):
+    equipment = get_object_or_404(models.equipments, equipment_id=id)
+    with connection.cursor() as cursor:
+        cursor.execute('CALL delete_equipment(%s)', [id])
+    return redirect(list_equipments)
 
 # EXPORT XML E JSON ----------------------------------------------------------------
 def export_json(request):
