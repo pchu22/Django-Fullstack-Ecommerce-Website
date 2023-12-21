@@ -9,13 +9,7 @@
             <hr>
             <form action="" method="POST" novalidate class="shadow p-5">
                 {% csrf_token %}    
-                {% if error_message %}
-                    <div class="alert alert-danger">{{ error_message }}</div>
-                {% endif %}
-                {% for field in form %}
-                    {{ field.label_tag }} {{ field }} <small class="text-danger">{{ field.errors|striptags }}</small>
-                    <br>
-                {% endfor %}
+                {{form.as_p}}
                 <input type="submit" value="Signup" class="btn btn-primary mt-4"><br>
                 <div class="text-center text-primary fw-bold">
                     <small>Already have an account? <a href="{% url 'Login' %}" class="text-danger text-decoration-none">Login</a></small>

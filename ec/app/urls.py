@@ -34,6 +34,7 @@ urlpatterns = [
     path('equipments/', views.list_equipments, name='EquipmentsList'),
     path('equipments/add', views.create_equipment, name='AddEquipment'),
     path('equipments/edit/<int:id>', views.edit_equipment, name='EditEquipment'),
+    path('equipments/edit-production/<int:id>', views.edit_production, name='EditProduction'),
     path('equipments/delete/<int:id>', views.delete_equipment, name='DeleteEquipment'),
     #equipment types
         path('equipment-types/', views.list_equipment_types, name='EquipmentTypesList'),
@@ -41,9 +42,13 @@ urlpatterns = [
         path('equipment-types/edit/<int:id>', views.edit_equipment_type, name='EditEquipmentType'),
         path('equipment-types/delete/<int:id>', views.delete_equipment_type, name='DeleteEquipmentType'),
     
+#JSON & XML importations and exportations
+    path('import-from-json/', views.import_json, name='ImportFromJSON'),
+
     #authentication
     path('signup/', views.signup, name='Signup'),
-    path('login/', views.login, name='Login'),
+    path('login/', views.login_view, name='Login'),
+    path('logout/', views.logout_view, name='Logout'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

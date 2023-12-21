@@ -13,53 +13,59 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-dark">
         <div class="container-fluid">
-                <a href="{% url 'Homepage' %}" class="btn-floating btn-sm text-white" style="font-size: 30px;">
-                    <i class="bi bi-terminal"></i>
-                </a>
+            <a class="navbar-brand text-white fw-bold" href="#">Grupo 23</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            {% if user.is_authenticated %}
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if user.is_staff %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Partners</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" href="{% url 'SuppliersList' %}">Suppliers</a></li>
+                                    <li><a class="dropdown-item text-black" href="{% url 'WarehousesList' %}">Warehouses</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        {% if user.is_staff %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Components</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item text-black" href="{% url 'ComponentsList' %}">In Stock</a></li>
+                                    <li><a class="dropdown-item text-black" href="{% url 'ComponentTypesList' %}">Component Types</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Equipments</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item text-black" href="{% url 'EquipmentsList' %}">In Stock</a></li>
+                                {% if user.is_staff %}
+                                    <li><a class="dropdown-item text-black" href="{% url 'EquipmentTypesList' %}">Equipment Types</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+            {% if user.is_authenticated %}
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Partners</a>
+                    <li class="nav-item dropdown" style="margin-right: 7.5rem;">
+                        <a class="nav-link dropdown-toggle text-white" href="" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{user.first_name}} {{user.last_name}}
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item text-black" href="{% url 'SuppliersList' %}">Suppliers</a></li>
-                            <li><a class="dropdown-item text-black" href="{% url 'WarehousesList' %}">Warehouses</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Components</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item text-black" href="{% url 'ComponentsList' %}">In Stock</a></li>
-                            <li><a class="dropdown-item text-black" href="{% url 'ComponentTypesList' %}">Component Types</a></li>
+                            <li><a class="dropdown-item text-black" href="#">Profile</a></li>
                             <li><a class="dropdown-item text-black" href="#">Orders</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light" role="button" data-bs-toggle="dropdown" aria-expanded="false">Equipments</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item text-black" href="{% url 'EquipmentsList' %}">In Stock</a></li>
-                            <li><a class="dropdown-item text-black" href="{% url 'EquipmentTypesList' %}">Equipment Types</a></li>
-                            <li><a class="dropdown-item text-black" href="#">Production</a></li>
+                            <li><a class="dropdown-item text-black" href="#">Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item bg-danger text-white" href="{% url 'Logout' %}">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
-            </div>
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown" style="margin-right: 5rem;">
-                    <a class="nav-link dropdown-toggle text-white" href="" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Pedro
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item text-black" href="#">Profile</a></li>
-                        <li><a class="dropdown-item text-black" href="#">Orders</a></li>
-                        <li><a class="dropdown-item text-black" href="#">Change Password</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item bg-danger text-white" href="{% url 'Login' %}">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+            {% endif %}
         </div>
     </nav>
 
