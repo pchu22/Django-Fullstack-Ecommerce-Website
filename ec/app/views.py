@@ -562,14 +562,11 @@ def delete_equipment(request, id):
     return redirect(list_equipments)
 
 # EXPORT XML E JSON ----------------------------------------------------------------
-def export_json(request):
-    try:
-        components_data = serialize('json', models.components.objects.all())
-        response = HttpResponse(components_data, content_type='application/json')
-        response['Content-Disposition'] = 'attachment; filename="export.json"'
-        return response
-    except SerializationError as e:
-        return HttpResponse(f"Error during JSON serialization: {e}", status=500)
+@classmethod
+def export_orders(cls, supplier_id, output_filename):
+    query = f"SELECT export_orders_to_supplier({supplier_id}, '{output_filename}');"
+    with connection.cursor() as cursor:
+        cursor.execute(query)
 
 def export_xml(request):
     try:

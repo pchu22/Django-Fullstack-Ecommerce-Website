@@ -43,7 +43,7 @@ urlpatterns = [
         path('equipment-types/delete/<int:id>', views.delete_equipment_type, name='DeleteEquipmentType'),
     
 #JSON & XML importations and exportations
-    path('import-from-json/', views.import_json, name='ImportFromJSON'),
+    #path('import-from-json/', views.export_orders, name='ImportFromJSON'),
 
     #authentication
     path('signup/', views.signup, name='Signup'),
